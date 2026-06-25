@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy } from 'firebase/firestore';
+import { collection, addDoc, query, onSnapshot, doc, updateDoc, deleteDoc, orderBy, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import TodoForm from '../components/TodoForm';
 import TodoCard from '../components/TodoCard';
@@ -26,10 +26,15 @@ export default function Home({ filter }) {
 
     const addTodo = async (todo) => {
         try {
-            await addDoc(collection(db, 'todos'), todo);
+            // Suprascriem createdAt cu serverTimestamp pentru o ordonare corecta
+            await addDoc(collection(db, 'todos'), {
+                ...todo,
+                createdAt: serverTimestamp()
+            });
+            console.log("Task added successfully!");
         } catch (e) {
             console.error("Error adding document: ", e);
-            alert("Error adding task.");
+            alert("Error adding task. Check F12 Console.");
         }
     };
 
